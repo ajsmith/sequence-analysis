@@ -4,6 +4,9 @@
 # Python cache
 __pycache__
 
+# Python binaries
+*.py[co]
+
 # Python Egg Info
 *.egg-info/
 
