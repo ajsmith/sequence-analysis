@@ -1,6 +1,23 @@
 """Pairwise alignment functions.
 
 """
+from collections.abc import Iterable
+from typing import Sequence
+
+
+# Type definitions for score and arrow matrices
+Score = int
+Arrow = int
+Matrix = list[list[int]]
+ScoreMatrix = list[list[Score]]
+ArrowMatrix = list[list[Arrow]]
+
+
+# Arrow value constants
+S_ARROW = 0 # Stop
+D_ARROW = 1  # Diagonal
+T_ARROW = 2  # Top
+L_ARROW = 3  # Left
 
 
 def needleman_wunsch(sequence1: str, sequence2: str) -> list[str]:
@@ -8,19 +25,33 @@ def needleman_wunsch(sequence1: str, sequence2: str) -> list[str]:
     match = 1
     gap = -1
     mismatch = -1
-    matrix = initialize_matrix(sequence1, sequence2, match, mismatch, gap)
+    (scores, arrows) = initialize_matrix(sequence1, sequence2, match, mismatch, gap)
+    # path = trace_path(arrows)
+    # print(list(path))
     return []
 
 
 def initialize_matrix(
         sequence1: str, sequence2: str, match: int, mismatch: int, gap: int
-    ) -> list[list[int]]:
+    ) -> tuple[ScoreMatrix, ArrowMatrix]:
     """Return the initialized matrix.
 
-    Here's an example taken from the Needleman-Wunsch Wikipedia page:
+    Here's a small example:
 
-        >>> matrix = initialize_matrix('gattaca', 'gcatgcu', 1, -1, -1)
-        >>> print_matrix(matrix)
+        >>> scores, arrows = initialize_matrix('at', 'aagt', 1, -1, -1)
+        >>> print_matrix(scores)
+        [0, -1, -2, -3, -4]
+        [-1, 1,  0, -1, -2]
+        [-2, 0,  0, -1,  0]
+        >>> print_matrix(arrows)
+        [0, 3, 3, 3, 3]
+        [2, 1, 3, 3, 3]
+        [2, 2, 1, 3, 1]
+
+    Here's a bigger example taken from the Needleman-Wunsch Wikipedia page:
+
+        >>> scores, arrows = initialize_matrix('gattaca', 'gcatgcu', 1, -1, -1)
+        >>> print_matrix(scores)
         [0,  -1, -2, -3, -4, -5, -6, -7]
         [-1,  1,  0, -1, -2, -3, -4, -5]
         [-2,  0,  0,  1,  0, -1, -2, -3]
@@ -29,23 +60,43 @@ def initialize_matrix(
         [-5, -3, -3, -1,  0,  0,  0, -1]
         [-6, -4, -2, -2, -1, -1,  1,  0]
         [-7, -5, -3, -1, -2, -2,  0,  0]
+        >>> print_matrix(arrows)
 
     """
     n = len(sequence1)
     m = len(sequence2)
-    result = initialize_matrix_top(m, gap)
+    (scores, arrows) = initialize_matrix_top(m, gap)
     for i in range(1, n + 1):
-        result.append([result[i-1][0] + gap])
+        # The left-most score is simply the score directly above plus
+        # the gap penalty.
+        scores.append([scores[i-1][0] + gap])
+        # The left-most arrow always points up.
+        arrows.append([T_ARROW])
         for j in range(1, m + 1):
-            top_left = result[i-1][j-1] + match_score(i, j, sequence1, sequence2, match, mismatch)
-            top = result[i-1][j] + gap
-            left = result[i][j-1] + gap
-            score = max(top_left, top, left)
-            result[i].append(score)
-    return result
+            cell = {}
+            # The diagonal score is the diagonal neighbor plus the
+            # match/mismatch score
+            top_left = scores[i-1][j-1] + match_score(i, j, sequence1, sequence2, match, mismatch)
+            cell[top_left] = D_ARROW
+            # The top score is the top neighbor plus the gap penalty.
+            top = scores[i-1][j] + gap
+            cell[top] = T_ARROW
+            # The left score is the left neighbor plus the gap
+            # penalty.
+            left = scores[i][j-1] + gap
+            cell[left] = L_ARROW
+            # Final score is the max of the top-left, top, and left
+            # values.
+            final_score = max(top_left, top, left)
+            scores[i].append(final_score)
+            # The arrow points in the direction of the neighbor from
+            # where the best score came. This implementation doesn't
+            # include branches, but could with a little extra effort.
+            arrows[i].append(cell[final_score])
+    return (scores, arrows)
 
 
-def initialize_matrix_top(m_len: int, gap: int) -> list[list[int]]:
+def initialize_matrix_top(m_len: int, gap: int) -> tuple[ScoreMatrix, ArrowMatrix]:
     """Return a matrix with only its top initialized.
 
     `m_length` is the sequence length (of the 2nd sequence). `gap` is
@@ -54,19 +105,32 @@ def initialize_matrix_top(m_len: int, gap: int) -> list[list[int]]:
     For example, if the sequence length is 4 and the gap penalty is
     -1, then the top of the matrix looks like:
 
-        >>> initialize_matrix_top(4, -1)
+        >>> scores, arrows = initialize_matrix_top(4, -1)
+        >>> scores
         [[0, -1, -2, -3, -4]]
+        >>> arrows
+        [[0, 3, 3, 3, 3]]
 
     With a gap penalty of -2, instead we get:
 
-        >>> initialize_matrix_top(4, -2)
+        >>> scores, arrows = initialize_matrix_top(4, -2)
+        >>> scores
         [[0, -2, -4, -6, -8]]
+        >>> arrows
+        [[0, 3, 3, 3, 3]]
 
     """
-    result = [[0]]
+    # The top-left score is always zero
+    scores = [[0]]
+    # The top-left arrow is always the stop arrow
+    arrows = [[S_ARROW]]
     for j in range(1, m_len + 1):
-        result[0].append(result[0][j-1] + gap)
-    return result
+        # The next score is simply the previous score on the left plus
+        # the gap penalty.
+        scores[0].append(scores[0][j-1] + gap)
+        # The next arrow always points left.
+        arrows[0].append(L_ARROW)
+    return (scores, arrows)
 
 
 def match_score(
@@ -85,6 +149,29 @@ def is_match(i: int, j: int, sequence1: str, sequence2: str) -> bool:
     return sequence1[i-1] == sequence2[j-1]
 
 
-def print_matrix(matrix: list[list[int]]) -> None:
+def trace_path(matrix: ArrowMatrix) -> Iterable[tuple[int, int]]:
+    i = len(matrix) - 1
+    j = len(matrix[0]) - 1
+    yield (i, j)
+    while i > 0 or j > 0:
+        neighbors_by_score = {}
+        # top-left
+        if i > 0 and j > 0:
+            neighbors_by_score[matrix[i-1][j-1]] = (i-1, j-1)
+
+        # top
+        if i > 0:
+            neighbors_by_score[matrix[i-1][j]] = (i-1, j)
+
+        # left
+        if j > 0:
+            neighbors_by_score[matrix[i][j-1]] = (i, j-1)
+
+        best_score = max(neighbors_by_score.keys())
+        yield neighbors_by_score[best_score]
+        i, j = neighbors_by_score[best_score]
+
+
+def print_matrix(matrix: Matrix) -> None:
     for row in matrix:
         print(row)
