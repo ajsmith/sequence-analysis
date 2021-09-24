@@ -1,0 +1,35 @@
+# Emacs backup files
+*~
+
+# Python cache
+__pycache__
+
+# Python Egg Info
+*.egg-info/
+
+# Python distutils
+build/
+dist/
+
+# PyTest Coverage file
+.coverage
+
+# Archive files
+*.bz2
+*.gz
+*.tar
+*.tgz
+*.xz
+*.zip
+
+# Virtual Environments
+venv/
+
+# Image files
+*.png
+
+# Document artifacts
+*.pdf
+
+# MacOS Metadata
+.DS_Store
