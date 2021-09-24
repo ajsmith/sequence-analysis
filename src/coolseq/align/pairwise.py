@@ -1,8 +1,8 @@
 """Pairwise alignment functions.
 
 """
-from collections.abc import Iterable
-from typing import Sequence
+from collections.abc import Generator, Iterable, Sequence
+from itertools import islice, tee
 
 
 # Type definitions for score and arrow matrices
@@ -26,9 +26,10 @@ def needleman_wunsch(sequence1: str, sequence2: str) -> list[str]:
     gap = -1
     mismatch = -1
     (scores, arrows) = initialize_matrix(sequence1, sequence2, match, mismatch, gap)
-    # path = trace_path(arrows)
-    # print(list(path))
-    return []
+    path = list(trace_path(arrows))
+    alignment = build_alignment(sequence1, sequence2, path)
+    # score = compute_alignment_score(scores, path)
+    return alignment
 
 
 def initialize_matrix(
@@ -184,6 +185,41 @@ def trace_path(matrix: ArrowMatrix) -> Iterable[tuple[int, int, int]]:
         yield (i, j, arrow)
 
 
+def build_alignment(sequence1: str, sequence2: str, path: Sequence[tuple[int, int, int]]) -> list[str]:
+    """Align two sequences from the arrow path.
+
+    >>> _, arrows = initialize_matrix('at', 'aagt', 1, -1, -1)
+    >>> path = list(trace_path(arrows))
+    >>> alignment = build_alignment('at', 'aagt', path)
+    >>> print_alignment(alignment)
+    a--t
+    aagt
+
+    """
+    aligned1 = ''
+    aligned2 = ''
+    for (i, j, arrow) in islice(reversed(path), 1, None):
+        i -= 1
+        j -= 1
+        # print(i, j, arrow)
+        if arrow == D_ARROW:
+            aligned1 = aligned1 + sequence1[i]
+            aligned2 = aligned2 + sequence2[j]
+        elif arrow == T_ARROW:
+            aligned1 = aligned1 + sequence1[i]
+            aligned2 = aligned2 + '-'
+        elif arrow == L_ARROW:
+            aligned1 = aligned1 + '-'
+            aligned2 = aligned2 + sequence2[j]
+    return [aligned1, aligned2]
+
+
 def print_matrix(matrix: Matrix) -> None:
     for row in matrix:
         print(row)
+
+
+def print_alignment(alignment: list[str]) -> None:
+    aligned1, aligned2 = alignment
+    print(aligned1)
+    print(aligned2)
