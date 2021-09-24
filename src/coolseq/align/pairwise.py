@@ -61,6 +61,14 @@ def initialize_matrix(
         [-6, -4, -2, -2, -1, -1,  1,  0]
         [-7, -5, -3, -1, -2, -2,  0,  0]
         >>> print_matrix(arrows)
+        [0, 3, 3, 3, 3, 3, 3, 3]
+        [2, 1, 3, 3, 3, 3, 3, 3]
+        [2, 2, 1, 1, 3, 3, 3, 3]
+        [2, 2, 2, 2, 1, 3, 3, 3]
+        [2, 2, 2, 2, 2, 1, 3, 3]
+        [2, 2, 2, 1, 2, 2, 1, 3]
+        [2, 2, 1, 2, 2, 2, 1, 3]
+        [2, 2, 2, 1, 3, 2, 2, 1]
 
     """
     n = len(sequence1)
@@ -149,27 +157,31 @@ def is_match(i: int, j: int, sequence1: str, sequence2: str) -> bool:
     return sequence1[i-1] == sequence2[j-1]
 
 
-def trace_path(matrix: ArrowMatrix) -> Iterable[tuple[int, int]]:
+def trace_path(matrix: ArrowMatrix) -> Iterable[tuple[int, int, int]]:
+    """Trace the path back through the arrow matrix.
+
+    Here's a small example:
+
+        >>> scores, arrows = initialize_matrix('at', 'aagt', 1, -1, -1)
+        >>> path = trace_path(arrows)
+        >>> print(list(path))
+        [(2, 4, 1), (1, 3, 3), (1, 2, 3), (1, 1, 1), (0, 0, 0)]
+
+    """
     i = len(matrix) - 1
     j = len(matrix[0]) - 1
-    yield (i, j)
-    while i > 0 or j > 0:
-        neighbors_by_score = {}
-        # top-left
-        if i > 0 and j > 0:
-            neighbors_by_score[matrix[i-1][j-1]] = (i-1, j-1)
-
-        # top
-        if i > 0:
-            neighbors_by_score[matrix[i-1][j]] = (i-1, j)
-
-        # left
-        if j > 0:
-            neighbors_by_score[matrix[i][j-1]] = (i, j-1)
-
-        best_score = max(neighbors_by_score.keys())
-        yield neighbors_by_score[best_score]
-        i, j = neighbors_by_score[best_score]
+    arrow = matrix[i][j]
+    yield (i, j, arrow)
+    while arrow != S_ARROW:
+        if arrow == D_ARROW:
+            i -= 1
+            j -= 1
+        elif arrow == T_ARROW:
+            i -= 1
+        elif arrow == L_ARROW:
+            j -= 1
+        arrow = matrix[i][j]
+        yield (i, j, arrow)
 
 
 def print_matrix(matrix: Matrix) -> None:
