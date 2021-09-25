@@ -129,22 +129,11 @@ def initialize_matrix_top(m_len: int, gap: int) -> tuple[ScoreMatrix, ArrowMatri
     return (scores, arrows)
 
 
-def match_score(
-        i: int, j: int, sequence1: str, sequence2: str, match: int, mismatch: int
-    ) -> int:
-    """Return the match score for a position."""
-    if is_match(i, j, sequence1, sequence2):
-        score = match
-    else:
-        score = mismatch
-    return score
-
-
-def is_match(i: int, j: int, sequence1: str, sequence2: str) -> bool:
-    """Return True if the sequences match at positions i, j; False otherwise.
+def is_match(i: int, j: int, seq1: str, seq2: str) -> bool:
+    """True if the sequences match at positions i, j; False otherwise.
 
     """
-    return sequence1[i-1] == sequence2[j-1]
+    return seq1[i-1] == seq2[j-1]
 
 
 def trace_path(matrix: ArrowMatrix) -> Iterable[tuple[int, int, int]]:
@@ -240,7 +229,7 @@ class SimilarityScorer:
         cell = {}
         # The diagonal score is the diagonal neighbor plus the
         # match/mismatch score
-        top_left = scores[i-1][j-1] + match_score(i, j, sequence1, sequence2, self.match, self.mismatch)
+        top_left = scores[i-1][j-1] + self.match_score(i, j, sequence1, sequence2)
         cell[top_left] = D_ARROW
         # The top score is the top neighbor plus the gap penalty.
         top = scores[i-1][j] + self.gap
@@ -256,3 +245,12 @@ class SimilarityScorer:
         # branches, but could with a little extra effort.
         arrow = cell[final_score]
         return (final_score, arrow)
+
+
+    def match_score(self, i: int, j: int, seq1: str, seq2: str) -> int:
+        """Return the match score for a position."""
+        if is_match(i, j, seq1, seq2):
+            score = self.match
+        else:
+            score = self.mismatch
+        return score
