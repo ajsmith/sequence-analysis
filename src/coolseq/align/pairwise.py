@@ -39,8 +39,23 @@ class SimilarityScorer:
         self.mismatch = mismatch
         self.gap_penalty = gap_penalty
 
+
+    def generate_top_edge(self, width: int) -> Iterable[tuple[Score, Arrow]]:
+        """Generate the top edge of a matrix."""
+        # The top-left score is always zero and the top-left arrow is
+        # always the stop arrow.
+        score = 0
+        yield (score, S_ARROW)
+        for _ in range(width):
+            # The next score is simply the previous score on the left
+            # plus the gap penalty, and the next arrow always points
+            # left.
+            score += self.gap_penalty
+            yield (score, L_ARROW)
+
+
     def score(self, scores: ScoreMatrix, sequence1: str, sequence2: str, i: int, j: int) -> tuple[Score, Arrow]:
-        """Determine score and arrow values for a cell position."""
+        """Calculate score and arrow values for a cell position."""
         cell = {}
         # The diagonal score is the diagonal neighbor plus the
         # match/mismatch score
@@ -127,7 +142,7 @@ def initialize_matrix(
     """
     n = len(sequence1)
     m = len(sequence2)
-    (scores, arrows) = initialize_matrix_top(m, scorer.gap_penalty)
+    (scores, arrows) = initialize_matrix_top(m, scorer)
     for i in range(1, n + 1):
         # The left-most score is simply the score directly above plus
         # the gap penalty.
@@ -141,41 +156,31 @@ def initialize_matrix(
     return (scores, arrows)
 
 
-def initialize_matrix_top(m_len: int, gap: int) -> tuple[ScoreMatrix, ArrowMatrix]:
+def initialize_matrix_top(width: int, scorer: SimilarityScorer) -> tuple[ScoreMatrix, ArrowMatrix]:
     """Return a matrix with only its top initialized.
-
-    `m_len` is the sequence length (of the 2nd sequence). `gap` is the
-    gap penalty.
 
     For example, if the sequence length is 4 and the gap penalty is
     -1, then the top of the matrix looks like:
 
-        >>> scores, arrows = initialize_matrix_top(4, -1)
-        >>> scores
-        [[0, -1, -2, -3, -4]]
-        >>> arrows
-        [[0, 3, 3, 3, 3]]
+    >>> scores, arrows = initialize_matrix_top(4, SimilarityScorer(1, -1, -1))
+    >>> scores
+    [[0, -1, -2, -3, -4]]
+    >>> arrows
+    [[0, 3, 3, 3, 3]]
 
     With a gap penalty of -2, instead we get:
 
-        >>> scores, arrows = initialize_matrix_top(4, -2)
-        >>> scores
-        [[0, -2, -4, -6, -8]]
-        >>> arrows
-        [[0, 3, 3, 3, 3]]
+    >>> scores, arrows = initialize_matrix_top(4, SimilarityScorer(1, -1, -2))
+    >>> scores
+    [[0, -2, -4, -6, -8]]
+    >>> arrows
+    [[0, 3, 3, 3, 3]]
 
     """
-    # The top-left score is always zero
-    scores = [[0]]
-    # The top-left arrow is always the stop arrow
-    arrows = [[S_ARROW]]
-    for j in range(1, m_len + 1):
-        # The next score is simply the previous score on the left plus
-        # the gap penalty.
-        scores[0].append(scores[0][j-1] + gap)
-        # The next arrow always points left.
-        arrows[0].append(L_ARROW)
-    return (scores, arrows)
+    top = list(scorer.generate_top_edge(width))
+    scores = list(score for (score, _) in top)
+    arrows = list(arrow for (_, arrow) in top)
+    return ([scores], [arrows])
 
 
 def is_match(i: int, j: int, seq1: str, seq2: str) -> bool:
