@@ -78,7 +78,7 @@ def initialize_matrix(
     n = len(sequence1)
     m = len(sequence2)
     (scores, arrows) = initialize_matrix_top(m, gap)
-    scorer = Scorer(match, mismatch, gap)
+    scorer = SimilarityScorer(match, mismatch, gap)
     for i in range(1, n + 1):
         # The left-most score is simply the score directly above plus
         # the gap penalty.
@@ -223,8 +223,8 @@ def print_arrow_matrix(matrix: ArrowMatrix) -> None:
         print('[' + arrow_line + ']')
 
 
-class Scorer:
-    """Determine scores for a cell in an alignment score matrix.
+class SimilarityScorer:
+    """Determine similarity scores for a cell in an alignment score matrix.
 
     """
 
