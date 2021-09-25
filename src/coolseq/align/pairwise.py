@@ -14,7 +14,7 @@ ArrowMatrix = list[list[Arrow]]
 
 
 # Arrow value constants
-S_ARROW = 0 # Stop
+S_ARROW = 0  # Stop
 D_ARROW = 1  # Diagonal
 T_ARROW = 2  # Top
 L_ARROW = 3  # Left
