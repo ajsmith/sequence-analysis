@@ -1,8 +1,8 @@
 """Pairwise alignment functions.
 
 """
-from collections.abc import Generator, Iterable, Sequence
-from itertools import islice, tee
+from collections.abc import Iterable, Sequence
+from itertools import islice
 
 
 # Type definitions for score and arrow matrices
@@ -20,11 +20,8 @@ T_ARROW = 2  # Top
 L_ARROW = 3  # Left
 
 
-def needleman_wunsch(sequence1: str, sequence2: str) -> list[str]:
+def needleman_wunsch(sequence1: str, sequence2: str, match: int=1, mismatch: int=-1, gap: int=-1) -> list[str]:
     """Return the pairwise alignment found using Needleman-Wunsch."""
-    match = 1
-    gap = -1
-    mismatch = -1
     (scores, arrows) = initialize_matrix(sequence1, sequence2, match, mismatch, gap)
     path = list(trace_path(arrows))
     alignment = build_alignment(sequence1, sequence2, path)
@@ -145,16 +142,18 @@ def initialize_matrix_top(m_len: int, gap: int) -> tuple[ScoreMatrix, ArrowMatri
 def match_score(
         i: int, j: int, sequence1: str, sequence2: str, match: int, mismatch: int
     ) -> int:
-    """Return the match score for a position.
-
-    """
+    """Return the match score for a position."""
     if is_match(i, j, sequence1, sequence2):
-        return match
+        score = match
     else:
-        return mismatch
+        score = mismatch
+    return score
 
 
 def is_match(i: int, j: int, sequence1: str, sequence2: str) -> bool:
+    """Return True if the sequences match at positions i, j; False otherwise.
+
+    """
     return sequence1[i-1] == sequence2[j-1]
 
 
@@ -215,11 +214,13 @@ def build_alignment(sequence1: str, sequence2: str, path: Sequence[tuple[int, in
 
 
 def print_matrix(matrix: Matrix) -> None:
+    """Print a matrix."""
     for row in matrix:
         print(row)
 
 
 def print_alignment(alignment: list[str]) -> None:
+    """Print an alignment."""
     aligned1, aligned2 = alignment
     print(aligned1)
     print(aligned2)
