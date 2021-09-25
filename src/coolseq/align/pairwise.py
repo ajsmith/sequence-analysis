@@ -19,6 +19,12 @@ D_ARROW = 1  # Diagonal
 T_ARROW = 2  # Top
 L_ARROW = 3  # Left
 
+ARROW_CHAR_MAP = {
+    S_ARROW: '∅',
+    D_ARROW: '↖',
+    T_ARROW: '↑',
+    L_ARROW: '←',
+}
 
 def needleman_wunsch(sequence1: str, sequence2: str, match: int=1, mismatch: int=-1, gap: int=-1) -> list[str]:
     """Return the pairwise alignment found using Needleman-Wunsch."""
@@ -36,37 +42,37 @@ def initialize_matrix(
 
     Here's a small example:
 
-        >>> scores, arrows = initialize_matrix('at', 'aagt', 1, -1, -1)
-        >>> print_matrix(scores)
-        [0, -1, -2, -3, -4]
-        [-1, 1,  0, -1, -2]
-        [-2, 0,  0, -1,  0]
-        >>> print_matrix(arrows)
-        [0, 3, 3, 3, 3]
-        [2, 1, 3, 3, 3]
-        [2, 2, 1, 3, 1]
+    >>> scores, arrows = initialize_matrix('at', 'aagt', 1, -1, -1)
+    >>> print_matrix(scores)
+    [0, -1, -2, -3, -4]
+    [-1, 1,  0, -1, -2]
+    [-2, 0,  0, -1,  0]
+    >>> print_arrow_matrix(arrows)
+    [∅ ← ← ← ←]
+    [↑ ↖ ← ← ←]
+    [↑ ↑ ↖ ← ↖]
 
     Here's a bigger example taken from the Needleman-Wunsch Wikipedia page:
 
-        >>> scores, arrows = initialize_matrix('gattaca', 'gcatgcu', 1, -1, -1)
-        >>> print_matrix(scores)
-        [0,  -1, -2, -3, -4, -5, -6, -7]
-        [-1,  1,  0, -1, -2, -3, -4, -5]
-        [-2,  0,  0,  1,  0, -1, -2, -3]
-        [-3, -1, -1,  0,  2,  1,  0, -1]
-        [-4, -2, -2, -1,  1,  1,  0, -1]
-        [-5, -3, -3, -1,  0,  0,  0, -1]
-        [-6, -4, -2, -2, -1, -1,  1,  0]
-        [-7, -5, -3, -1, -2, -2,  0,  0]
-        >>> print_matrix(arrows)
-        [0, 3, 3, 3, 3, 3, 3, 3]
-        [2, 1, 3, 3, 3, 3, 3, 3]
-        [2, 2, 1, 1, 3, 3, 3, 3]
-        [2, 2, 2, 2, 1, 3, 3, 3]
-        [2, 2, 2, 2, 2, 1, 3, 3]
-        [2, 2, 2, 1, 2, 2, 1, 3]
-        [2, 2, 1, 2, 2, 2, 1, 3]
-        [2, 2, 2, 1, 3, 2, 2, 1]
+    >>> scores, arrows = initialize_matrix('gattaca', 'gcatgcu', 1, -1, -1)
+    >>> print_matrix(scores)
+    [0,  -1, -2, -3, -4, -5, -6, -7]
+    [-1,  1,  0, -1, -2, -3, -4, -5]
+    [-2,  0,  0,  1,  0, -1, -2, -3]
+    [-3, -1, -1,  0,  2,  1,  0, -1]
+    [-4, -2, -2, -1,  1,  1,  0, -1]
+    [-5, -3, -3, -1,  0,  0,  0, -1]
+    [-6, -4, -2, -2, -1, -1,  1,  0]
+    [-7, -5, -3, -1, -2, -2,  0,  0]
+    >>> print_arrow_matrix(arrows)
+    [∅ ← ← ← ← ← ← ←]
+    [↑ ↖ ← ← ← ← ← ←]
+    [↑ ↑ ↖ ↖ ← ← ← ←]
+    [↑ ↑ ↑ ↑ ↖ ← ← ←]
+    [↑ ↑ ↑ ↑ ↑ ↖ ← ←]
+    [↑ ↑ ↑ ↖ ↑ ↑ ↖ ←]
+    [↑ ↑ ↖ ↑ ↑ ↑ ↖ ←]
+    [↑ ↑ ↑ ↖ ← ↑ ↑ ↖]
 
     """
     n = len(sequence1)
@@ -224,3 +230,10 @@ def print_alignment(alignment: list[str]) -> None:
     aligned1, aligned2 = alignment
     print(aligned1)
     print(aligned2)
+
+
+def print_arrow_matrix(matrix: ArrowMatrix) -> None:
+    """Pretty print an arrow matrix."""
+    for row in matrix:
+        arrow_line = ' '.join(ARROW_CHAR_MAP[e] for e in row)
+        print('[' + arrow_line + ']')
