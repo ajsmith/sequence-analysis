@@ -78,6 +78,7 @@ def initialize_matrix(
     n = len(sequence1)
     m = len(sequence2)
     (scores, arrows) = initialize_matrix_top(m, gap)
+    scorer = Scorer(match, mismatch, gap)
     for i in range(1, n + 1):
         # The left-most score is simply the score directly above plus
         # the gap penalty.
@@ -85,26 +86,9 @@ def initialize_matrix(
         # The left-most arrow always points up.
         arrows.append([T_ARROW])
         for j in range(1, m + 1):
-            cell = {}
-            # The diagonal score is the diagonal neighbor plus the
-            # match/mismatch score
-            top_left = scores[i-1][j-1] + match_score(i, j, sequence1, sequence2, match, mismatch)
-            cell[top_left] = D_ARROW
-            # The top score is the top neighbor plus the gap penalty.
-            top = scores[i-1][j] + gap
-            cell[top] = T_ARROW
-            # The left score is the left neighbor plus the gap
-            # penalty.
-            left = scores[i][j-1] + gap
-            cell[left] = L_ARROW
-            # Final score is the max of the top-left, top, and left
-            # values.
-            final_score = max(top_left, top, left)
-            scores[i].append(final_score)
-            # The arrow points in the direction of the neighbor from
-            # where the best score came. This implementation doesn't
-            # include branches, but could with a little extra effort.
-            arrows[i].append(cell[final_score])
+            score, arrow = scorer.score(scores, sequence1, sequence2, i, j)
+            scores[i].append(score)
+            arrows[i].append(arrow)
     return (scores, arrows)
 
 
@@ -237,3 +221,38 @@ def print_arrow_matrix(matrix: ArrowMatrix) -> None:
     for row in matrix:
         arrow_line = ' '.join(ARROW_CHAR_MAP[e] for e in row)
         print('[' + arrow_line + ']')
+
+
+class Scorer:
+    """Determine scores for a cell in an alignment score matrix.
+
+    """
+
+
+    def __init__(self, match: int=1, mismatch: int=-1, gap: int=-1) -> None:
+        """Instantiate a scorer."""
+        self.match = match
+        self.mismatch = mismatch
+        self.gap = gap
+
+    def score(self, scores: ScoreMatrix, sequence1: str, sequence2: str, i: int, j: int) -> tuple[Score, Arrow]:
+        """Determine score and arrow values for a cell position."""
+        cell = {}
+        # The diagonal score is the diagonal neighbor plus the
+        # match/mismatch score
+        top_left = scores[i-1][j-1] + match_score(i, j, sequence1, sequence2, self.match, self.mismatch)
+        cell[top_left] = D_ARROW
+        # The top score is the top neighbor plus the gap penalty.
+        top = scores[i-1][j] + self.gap
+        cell[top] = T_ARROW
+        # The left score is the left neighbor plus the gap penalty.
+        left = scores[i][j-1] + self.gap
+        cell[left] = L_ARROW
+        # Final score is the max of the top-left, top, and left
+        # values.
+        final_score = max(top_left, top, left)
+        # The arrow points in the direction of the neighbor from where
+        # the best score came. This implementation doesn't include
+        # branches, but could with a little extra effort.
+        arrow = cell[final_score]
+        return (final_score, arrow)
