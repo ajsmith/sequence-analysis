@@ -195,11 +195,11 @@ def trace_path(matrix: ArrowMatrix) -> Iterable[tuple[int, int, int]]:
 
     Here's a small example:
 
-        >>> scores, arrows = initialize_matrix(
-        ...     'at', 'aagt', SimilarityScorer(1, -1, -1))
-        >>> path = trace_path(arrows)
-        >>> print(list(path))
-        [(2, 4, 1), (1, 3, 3), (1, 2, 3), (1, 1, 1), (0, 0, 0)]
+    >>> scores, arrows = initialize_matrix(
+    ...     'at', 'aagt', SimilarityScorer(1, -1, -1))
+    >>> path = trace_path(arrows)
+    >>> print(list(path))
+    [(2, 4, 1), (1, 3, 3), (1, 2, 3), (1, 1, 1), (0, 0, 0)]
 
     """
     i = len(matrix) - 1
