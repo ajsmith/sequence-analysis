@@ -13,8 +13,10 @@ Needleman-Wunsch
     >>> alignment = needleman_wunsch('at', 'aagt')
     >>> print_alignment(alignment)
     a--t
+    |  |
     aagt
     >>> alignment = needleman_wunsch('gattaca', 'gcatgcu')
     >>> print_alignment(alignment)
     g-attaca
+    | ||  |
     gcatg-cu

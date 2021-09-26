@@ -226,6 +226,7 @@ def build_alignment(sequence1: str, sequence2: str, path: Sequence[tuple[int, in
     >>> alignment = build_alignment('at', 'aagt', path)
     >>> print_alignment(alignment)
     a--t
+    |  |
     aagt
 
     """
@@ -256,7 +257,15 @@ def print_matrix(matrix: Matrix) -> None:
 def print_alignment(alignment: list[str]) -> None:
     """Print an alignment."""
     aligned1, aligned2 = alignment
+    bars = ''
+    for i in range(len(aligned1)):
+        if aligned1[i] == aligned2[i]:
+            bars += '|'
+        else:
+            bars += ' '
+    bars = bars.rstrip()
     print(aligned1)
+    print(bars)
     print(aligned2)
 
 
