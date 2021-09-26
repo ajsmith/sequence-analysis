@@ -40,19 +40,56 @@ class SimilarityScorer:
         self.gap_penalty = gap_penalty
 
 
-    def generate_top_edge(self, width: int) -> Iterable[tuple[Score, Arrow]]:
-        """Generate the top edge of a matrix."""
+    def get_top_edges(self, width: int) -> tuple[ScoreMatrix, ArrowMatrix]:
+        """Fill the top edge of the score and arrow matrices.
+
+        >>> scorer = SimilarityScorer(1, -1, -1)
+        >>> scores, arrows = scorer.get_top_edges(5)
+        >>> scores
+        [[0, -1, -2, -3, -4]]
+        >>> arrows
+        [[0, 3, 3, 3, 3]]
+        >>> scorer = SimilarityScorer(1, -1, -2)
+        >>> scores, arrows = scorer.get_top_edges(4)
+        >>> scores
+        [[0, -2, -4, -6]]
+        >>> arrows
+        [[0, 3, 3, 3]]
+
+        """
+        scores_top = []
+        arrows_top = []
         # The top-left score is always zero and the top-left arrow is
         # always the stop arrow.
         score = 0
-        yield (score, S_ARROW)
-        for _ in range(width):
+        scores_top.append(score)
+        arrows_top.append(S_ARROW)
+        for _ in range(1, width):
             # The next score is simply the previous score on the left
             # plus the gap penalty, and the next arrow always points
             # left.
             score += self.gap_penalty
-            yield (score, L_ARROW)
+            scores_top.append(score)
+            arrows_top.append(L_ARROW)
+        return ([scores_top], [arrows_top])
 
+    def fill_next_row(
+            self, scores: ScoreMatrix, arrows: ArrowMatrix, i: int, width: int, sequence1: str, sequence2: str
+        ) -> None:
+        """Generate the next row of scores and arrows."""
+        # The left-most score is simply the score directly above plus
+        # the gap penalty.
+        score = scores[i-1][0] + self.gap_penalty
+        # The left-most arrow always points up.
+        arrow = T_ARROW
+        # Append new lists containing the initial values to the scores
+        # and arrows matrices.
+        scores.append([score])
+        arrows.append([arrow])
+        for j in range(1, width):
+            score, arrow = self.score(scores, sequence1, sequence2, i, j)
+            scores[i].append(score)
+            arrows[i].append(arrow)
 
     def score(self, scores: ScoreMatrix, sequence1: str, sequence2: str, i: int, j: int) -> tuple[Score, Arrow]:
         """Calculate score and arrow values for a cell position."""
@@ -142,45 +179,11 @@ def initialize_matrix(
     """
     n = len(sequence1)
     m = len(sequence2)
-    (scores, arrows) = initialize_matrix_top(m, scorer)
-    for i in range(1, n + 1):
-        # The left-most score is simply the score directly above plus
-        # the gap penalty.
-        scores.append([scores[i-1][0] + scorer.gap_penalty])
-        # The left-most arrow always points up.
-        arrows.append([T_ARROW])
-        for j in range(1, m + 1):
-            score, arrow = scorer.score(scores, sequence1, sequence2, i, j)
-            scores[i].append(score)
-            arrows[i].append(arrow)
+    width = m + 1
+    scores, arrows = scorer.get_top_edges(width)
+    for i in range(n):
+        scorer.fill_next_row(scores, arrows, i + 1, width, sequence1, sequence2)
     return (scores, arrows)
-
-
-def initialize_matrix_top(width: int, scorer: SimilarityScorer) -> tuple[ScoreMatrix, ArrowMatrix]:
-    """Return a matrix with only its top initialized.
-
-    For example, if the sequence length is 4 and the gap penalty is
-    -1, then the top of the matrix looks like:
-
-    >>> scores, arrows = initialize_matrix_top(4, SimilarityScorer(1, -1, -1))
-    >>> scores
-    [[0, -1, -2, -3, -4]]
-    >>> arrows
-    [[0, 3, 3, 3, 3]]
-
-    With a gap penalty of -2, instead we get:
-
-    >>> scores, arrows = initialize_matrix_top(4, SimilarityScorer(1, -1, -2))
-    >>> scores
-    [[0, -2, -4, -6, -8]]
-    >>> arrows
-    [[0, 3, 3, 3, 3]]
-
-    """
-    top = list(scorer.generate_top_edge(width))
-    scores = list(score for (score, _) in top)
-    arrows = list(arrow for (_, arrow) in top)
-    return ([scores], [arrows])
 
 
 def is_match(i: int, j: int, seq1: str, seq2: str) -> bool:
