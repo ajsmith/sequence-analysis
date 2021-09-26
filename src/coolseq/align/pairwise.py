@@ -32,13 +32,11 @@ class SimilarityScorer:
 
     """
 
-
     def __init__(self, match: int=1, mismatch: int=-1, gap_penalty: int=-1) -> None:
         """Instantiate a scorer."""
         self.match = match
         self.mismatch = mismatch
         self.gap_penalty = gap_penalty
-
 
     def get_top_edges(self, width: int) -> tuple[ScoreMatrix, ArrowMatrix]:
         """Fill the top edge of the score and arrow matrices.
@@ -112,7 +110,6 @@ class SimilarityScorer:
         # branches, but could with a little extra effort.
         arrow = cell[final_score]
         return (final_score, arrow)
-
 
     def match_score(self, i: int, j: int, seq1: str, seq2: str) -> int:
         """Return the match score for a position."""
