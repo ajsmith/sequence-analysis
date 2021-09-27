@@ -2,12 +2,19 @@
 
 Programs for analyzing biological sequences such as DNA, RNA, and proteins.
 
+This project currently implements Needleman-Wunsch and
+Waterman-Smith-Beyer algorithms for pairwise sequence alignment.
+
+Reports are generated using Sphinx Doc.
+
+
 # Prerequisites
 
 - Python 3
 - Linux (might work elsewhere too)
 
 Building PDFs also requires a full LaTeX installation.
+
 
 # Usage
 
