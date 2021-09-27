@@ -292,8 +292,8 @@ provided by this project.
     AGAGTCGTGTTGCTTGATACGTG
 
 
-Observations
-~~~~~~~~~~~~
+Interpretation of Results
+-------------------------
 
 EMBOSS Needle with default options produced an alignment with well
 defined gaps and clear regions of high conservation.
