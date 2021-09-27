@@ -30,7 +30,7 @@ Needleman-Wunsch
     attgagc
 
 
-Smith-Waterman-Beyer
+Waterman-Smith-Beyer
 ====================
 
 The WSBScorer encapsulates scoring logic for the Waterman-Smith-Beyer
@@ -58,6 +58,8 @@ Scoring options can be set when creating a scorer instance.
     ...     'gap_extend': -1,
     ... }
 
+The following example shows matrix initialization for a pair of
+sequences using the Waterman-Smith-Beyer algorithm.
 
     >>> from coolseq.align.pairwise import (
     ...     initialize_matrix,
@@ -97,18 +99,3 @@ Put it all together.
     g-attaca
     | ||  |
     gcatg-cu
-
-..    >>> print_alignment(result)
-..    a--t
-..    |  |
-..    aagt
-..    >>> result = wsb_align('gattaca', 'gcatgcu')
-..    >>> print_alignment(result)
-..    g-attaca
-..    | ||  |
-..    gcatg-cu
-..    >>> result = wsb_align('atgc', 'attgagc')
-..    >>> print_alignment(result)
-..    at-g--c
-..    || |  |
-..    attgagc
