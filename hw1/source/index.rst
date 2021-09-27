@@ -236,49 +236,60 @@ provided by this project.
 2. Align samples using Needleman-Wunsch
 
     >>> nw_options = {
-    ...     'gap_extend': -5,
+    ...     'mismatch': -10,
+    ...     'gap_extend': -2,
     ... }
     >>> result = nw_align(sample1.seq, sample2.seq, nw_options)
     >>> print_alignment(result)
-    ACTTGGATATGGATTCTTCACGGTAACGTAACTGAATGTGGAGACGTCGGCGCGAGCCCTGGGAGGAGTTAT
-         || | | |  |    | | | | ||| | | | ||   |  | |||    |      |  | || ||
-    CGAGCGAAAAGAAAACAGTTCAGCA-C-TAAGTCACTTTGTCTATAT-GGCAAATGTGAGATGCAGTGT-AT
+    ACTTG-G--ATAT--GGATT---C--TTCACGG---TAA--C-----GT--A-ACTG--AA-TGTGGAGACG
+     |  | |  | |   | |     |  |||| |    |||  |     ||  | | ||  || |||| |||
+    -C--GAGCGA-A-AAG-A--AAACAGTTCA-G-CACTAAGTCACTTTGTCTATA-TGGCAAATGTG-AGA--
     <BLANKLINE>
-    CTTTTCTTCTTAACAGCTTATCACCCCGGAATTGGTTTATCCGGAGATGGGGTCTTATGGCTGGAAGAGGCC
-         | ||  || |   ||  |    | ||||     ||    ||      |   |||     |     ||
-    GGAG-CGTC--AATATTCTAGTATGA-GAAATTAACG-ATTTA-AGTCCTTCTTAAATGAGGCCATTTACCC
+    TCGGC-GC-G-AGCCCTGGGAG-G--AG-TTATCTTTTCT--TC-TT-A-ACAGC-TTATCACCCCGGAATT
+    | | | |  | |    ||| || |  |  | || |   ||  |  |  | | |   |||  ||   | | ||
+    T-G-CAG-TGTA----TGG-AGCGTCA-AT-AT-T---CTAGT-AT-GAGA-A--ATTA--AC---G-A-TT
     <BLANKLINE>
-    AGCACCTTTGCTGGCTCCGGTGCGCTTGTGACGGCCCGTGAAAATCCACAGGAAGGAATAGTTTTCATGCTA
-    |       |||  |  |||     | | | | |     | | | |  |        || |||  |  ||||
-    ATAGAGGGTGCCAGGCCCGTATAACGT-TAATGATTACT-AGA-TG-ATGTTTCCAAAGAGTCGTGTTGCTT
+    GGTTTA--TCCGGAGATGGGGTCTTATGGCTGGAA-GAGGCCAGCACCTTTG-C---T-G-GCTCCGGTGCG
+      |  |  |||     |    |||||       || |||||||     |||  |   | | |    |||||
+    --T--AAGTCC-----T----TCTTA-------AATGAGGCCA-----TTT-ACCCATAGAG----GGTGC-
     <BLANKLINE>
-    GGTCGTACT
-    | |
-    GATACGTG-
+    CTTGTGACGGCCCGTGAAAATCCACA-GG--AA-GGA--A-TAG-T--T-TT-C-AT--GCTAG--GT----
+    |     | ||||||| |   |  | | |   || | |  | ||| |  | || | |   |  ||  ||
+    C-----A-GGCCCGT-A---T--A-ACG-TTAATG-ATTACTAGATGATGTTTCCA-AAG--AGTCGTGTTG
+    <BLANKLINE>
+    C--G-TAC-T-
+    |  | ||| |
+    CTTGATACGTG
 
 3. Align samples using Waterman-Smith-Beyer
 
     >>> wsb_options = {
-    ...     'gap_start': 10,
-    ...     'gap_extend': 5,
+    ...     'match': 0,
+    ...     'mismatch': 10,
+    ...     'gap_start': 5,
+    ...     'gap_extend': 2,
     ... }
     >>> result = wsb_align(sample1.seq, sample2.seq, wsb_options)
     >>> print_alignment(result)
-    ACTTGGATATGGATTCTTCACGGTAACGTAACTGAATGTGGAGACGTCGGCGCGAGCCCTGGGAGGAGTTAT
-         || | | |  |    | | |      |    |||  | | | |              | | |   |
-    CGAGCGAAAAGAAAACAGTTCAGCACTAAGTCACTTTGTCTATATGGCAAATGTGAGATGCAGTGTATGGAG
+    --------------------------------ACTTGG---ATATGGATTCTTCACGGTAACGTAACTGAAT
+                                    |||| |   ||||||      ||              |||
+    CGAGCGAAAAGAAAACAGTTCAGCACTAAGTCACTTTGTCTATATGG------CA--------------AAT
     <BLANKLINE>
-    CTTTTCTTCTTAACAGCTTATCACCCCGGAATTGGTTTATCCGGAGATGGGGTCTTATGGCTGGAAGAGGCC
-    | |   |  |  |         |     || ||   |  | |  | ||| || | | |  |   | ||||
-    CGTCAATATTCTAGTATGAGAAATTAACGATTTAAGTCCTTCTTAAATGAGGCCATTTACCCATA-GAGGG-
+    GTGGAGACGTCGGCGCGAGCCCTG---GGAGGAGTTATC-TTTTC----TTCTTAACAGCTTATCACCCCG-
+    ||| |||  |    || ||   ||   ||||       |    ||    ||||    ||  |||      |
+    GTG-AGA--T----GC-AG---TGTATGGAG-------CG---TCAATATTCT----AG--TAT------GA
     <BLANKLINE>
-    AGCACCTTTGCTGGCTCCGGTGCGCTTGTGACGGCCCGTGAAAATCCACAGGAAGGAATAGTTTTCATGCTA
-            |||  |  |||     | |         |  ||  ||       || |   |||  |  ||||
-    --------TGCCAGGCCCGTATAACGTTAATGATTACTAGATGATGTTTCCAAA-G---AGTCGTGTTGCTT
+    GA-ATT---GGTTTA--TCCGGAGATGGGGTCTTATGGCTGGAA-GAGGCCAGCACCTTTGCTGG-CTCC--
+    || |||   | ||||  |||     |    |||||       || |||||||     |||      | ||
+    GAAATTAACGATTTAAGTCC-----T----TCTTA-------AATGAGGCCA-----TTT-----AC-CCAT
     <BLANKLINE>
-    GGTCGTACT
-    | |
-    GATACGTG-
+    ----GGTGCGCTTGTGAC-GGCCCGTGA--A----AATCCACAGGA-----AGGAAT-A-GTTTTCATGC-T
+        |||||        | ||||||| |  |    |||      ||     ||  || | |||| ||
+    AGAGGGTGC--------CAGGCCCGT-ATAACGTTAAT------GATTACTAG--ATGATGTTTCCA---A-
+    <BLANKLINE>
+    AG-GTCGT----------AC-T-
+    || |||||          || |
+    AGAGTCGTGTTGCTTGATACGTG
 
 
 Observations
@@ -287,12 +298,12 @@ Observations
 EMBOSS Needle with default options produced an alignment with well
 defined gaps and clear regions of high conservation.
 
-In comparison, the alignments produced by this project's
-Needleman-Wunsch and Waterman-Smith-Beyer functions are both more
-spread out and look less clearly defined. Waterman-Smith-Beyer seems
-to produce slightly results. This may be due to the
-Waterman-Smith-Beyer implementation is using an affine gap function
-while Needleman-Wunsch applies a linear gap penalty.
+The alignments produced by this project's Needleman-Wunsch function
+looks more spread out and less clearly defined. The results from
+Waterman-Smith-Beyer look very clearly defined and seem to be very
+close to those of EMBOSS Needle. This may be due to the
+Waterman-Smith-Beyer implementation having an affine gap function
+while Needleman-Wunsch uses a linear gap penalty.
 
 
 Source Code
