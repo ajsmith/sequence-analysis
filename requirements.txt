@@ -1,5 +1,9 @@
 Sphinx
+biopython
+ipython
+matplotlib
 mypy
+numpydoc
 pylint
 pytest
 pytest-cov

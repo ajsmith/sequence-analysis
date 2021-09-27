@@ -12,6 +12,61 @@ implementation.
 Needleman-Wunsch
 ================
 
+Tests for some of the internals.
+
+    >>> from coolseq.align.pairwise import NWScorer
+    >>> from coolseq.align.pairwise import initialize_matrix
+    >>> from coolseq.align.pairwise import print_matrix
+    >>> from coolseq.align.pairwise import print_arrow_matrix
+
+    >>> scores, arrows = initialize_matrix(
+    ...    'at', 'aagt', NWScorer(1, -1, -1))
+    >>> print_matrix(scores)
+    [0, -1, -2, -3, -4]
+    [-1, 1,  0, -1, -2]
+    [-2, 0,  0, -1,  0]
+    >>> print_arrow_matrix(arrows)
+    [∅ ← ← ← ←]
+    [↑ ↖ ← ← ←]
+    [↑ ↑ ↖ ← ↖]
+
+    >>> scores, arrows = initialize_matrix(
+    ...     'gattaca', 'gcatgcu', NWScorer(1, -1, -1))
+    >>> print_matrix(scores)
+    [0,  -1, -2, -3, -4, -5, -6, -7]
+    [-1,  1,  0, -1, -2, -3, -4, -5]
+    [-2,  0,  0,  1,  0, -1, -2, -3]
+    [-3, -1, -1,  0,  2,  1,  0, -1]
+    [-4, -2, -2, -1,  1,  1,  0, -1]
+    [-5, -3, -3, -1,  0,  0,  0, -1]
+    [-6, -4, -2, -2, -1, -1,  1,  0]
+    [-7, -5, -3, -1, -2, -2,  0,  0]
+    >>> print_arrow_matrix(arrows)
+    [∅ ← ← ← ← ← ← ←]
+    [↑ ↖ ← ← ← ← ← ←]
+    [↑ ↑ ↖ ↖ ← ← ← ←]
+    [↑ ↑ ↑ ↑ ↖ ← ← ←]
+    [↑ ↑ ↑ ↑ ↑ ↖ ← ←]
+    [↑ ↑ ↑ ↖ ↑ ↑ ↖ ←]
+    [↑ ↑ ↖ ↑ ↑ ↑ ↖ ←]
+    [↑ ↑ ↑ ↖ ← ↑ ↑ ↖]
+
+    >>> scores, arrows = initialize_matrix(
+    ...     'atgc', 'attgagc', NWScorer(1, -1, -1))
+    >>> print_matrix(scores)
+    [0,  -1, -2, -3, -4, -5, -6, -7]
+    [-1,  1,  0, -1, -2, -3, -4, -5]
+    [-2,  0,  2,  1,  0, -1, -2, -3]
+    [-3, -1,  1,  1,  2,  1,  0, -1]
+    [-4, -2,  0,  0,  1,  1,  0,  1]
+    >>> print_arrow_matrix(arrows)
+    [∅ ← ← ← ← ← ← ←]
+    [↑ ↖ ← ← ← ← ← ←]
+    [↑ ↑ ↖ ← ← ← ← ←]
+    [↑ ↑ ↑ ↖ ↖ ← ← ←]
+    [↑ ↑ ↑ ↑ ↑ ↖ ← ↖]
+
+
     >>> from coolseq.align.pairwise import nw_align, print_alignment
     >>> result = nw_align('at', 'aagt')
     >>> print_alignment(result)
@@ -61,11 +116,16 @@ Scoring options can be set when creating a scorer instance.
 The following example shows matrix initialization for a pair of
 sequences using the Waterman-Smith-Beyer algorithm.
 
-    >>> from coolseq.align.pairwise import (
-    ...     initialize_matrix,
-    ...     print_matrix,
-    ...     print_arrow_matrix,
-    ... )
+    >>> scores, arrows = initialize_matrix('at', 'aagt', WSBScorer())
+    >>> print_matrix(scores)
+    [0, 2, 3, 4, 5]
+    [2, 0, 2, 3, 4]
+    [3, 2, 1, 3, 3]
+    >>> print_arrow_matrix(arrows)
+    [∅ ← ← ← ←]
+    [↑ ↖ ← ← ←]
+    [↑ ↑ ↖ ← ↖]
+
     >>> scores, arrows = initialize_matrix('ag', 'tagt', WSBScorer())
     >>> print_matrix(scores)
     [0, 2, 3, 4, 5]

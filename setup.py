@@ -14,6 +14,10 @@ setup(
     packages=find_packages('src'),
     package_dir={'': 'src'},
 #    entry_points=entry_points,
+    include_package_data=True,
+    package_data={
+        'coolseq': ['align/samples.fasta'],
+    },
     install_requires=[
         'PyYAML',
     ],

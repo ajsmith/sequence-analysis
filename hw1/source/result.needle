@@ -1,0 +1,56 @@
+########################################
+# Program: needle
+# Rundate: Mon 27 Sep 2021 07:20:37
+# Commandline: needle
+#    -asequence scere.fasta
+#    -bsequence dmela.fasta
+#    -outfile result.needle
+# Align_format: srspair
+# Report_file: result.needle
+########################################
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: D25212.1
+# 2: AY319386.1
+# Matrix: EDNAFULL
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 297
+# Identity:     114/297 (38.4%)
+# Similarity:   114/297 (38.4%)
+# Gaps:         159/297 (53.5%)
+# Score: 174.0
+# 
+#
+#=======================================
+
+D25212.1           1 --------------------------------ACTTGG---ATATGGATT     15
+                                                     ||||.|   ||||||   
+AY319386.1         1 CGAGCGAAAAGAAAACAGTTCAGCACTAAGTCACTTTGTCTATATGG---     47
+
+D25212.1          16 CTTCACGGTAACGTAACTGAATGTGGAGACGTCGGCGCGAGCCCTG---G     62
+                        ||              ||||| ||||          .||..||   |
+AY319386.1        48 ---CA--------------AATGT-GAGA----------TGCAGTGTATG     69
+
+D25212.1          63 GAGGAGTTATCTTTTCTTCTTAACAGCTTATCACCCCGGAATT---GGTT    109
+                     || |.||.| .|.||||       ||  |||.|    |.||||   |.||
+AY319386.1        70 GA-GCGTCA-ATATTCT-------AG--TATGA----GAAATTAACGATT    104
+
+D25212.1         110 TA--TCCGGAGATGGGGTCTTATGGCTGGAA-GAGGCCAGCACCTTTGCT    156
+                     ||  |||         .|||||       || |||||||     |||.| 
+AY319386.1       105 TAAGTCC---------TTCTTA-------AATGAGGCCA-----TTTAC-    132
+
+D25212.1         157 GGCTCC------GGTGCGCTTGTGAC-GGCCCGTGAAAATCCACAGGAAG    199
+                         ||      |||||        | |||||||..|     ||...||.
+AY319386.1       133 ----CCATAGAGGGTGC--------CAGGCCCGTATA-----ACGTTAAT    165
+
+D25212.1         200 GAATA---------GTTTTCA-----------TGCTAGGT-CGTACT    225
+                     ||.||         ||||.||           ||||.|.| |||.  
+AY319386.1       166 GATTACTAGATGATGTTTCCAAAGAGTCGTGTTGCTTGATACGTG--    210
+
+
+#---------------------------------------
+#---------------------------------------

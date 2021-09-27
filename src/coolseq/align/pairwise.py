@@ -1,5 +1,11 @@
 """Pairwise alignment functions.
 
+This module provides implementations of Needleman-Wunsch and
+Waterman-Smith-Beyer algorithms. Clients can call the nw_align() and
+wsb_align() functions to calculate alignments. Main logic for these
+are found in their scorer implementations, NWScorer and WSBScorer. A
+number of support functions are also found here.
+
 """
 from abc import ABC, abstractmethod
 from collections.abc import Iterable, Sequence
@@ -254,10 +260,11 @@ class WSBScorer(Scorer):
 
 
 def nw_align(
-        sequence1: str, sequence2: str, match: int=1, mismatch: int=-1, gap: int=-1,
+        sequence1: str, sequence2: str, opts: Optional[ScoringOptions] = None
     ) -> list[str]:
     """Return the pairwise alignment found using Needleman-Wunsch."""
-    scorer = NWScorer(match, mismatch, gap)
+    opts = opts or {}
+    scorer = NWScorer(**opts)
     scores, arrows = initialize_matrix(sequence1, sequence2, scorer)
     path = list(trace_path(arrows))
     alignment = build_alignment(sequence1, sequence2, path)
@@ -278,70 +285,7 @@ def wsb_align(seq1: str, seq2: str, opts: Optional[ScoringOptions] = None) -> li
 def initialize_matrix(
         sequence1: str, sequence2: str, scorer: Scorer,
     ) -> tuple[ScoreMatrix, ArrowMatrix]:
-    """Return the initialized matrix.
-
-    Here's a small example:
-
-    >>> scores, arrows = initialize_matrix(
-    ...    'at', 'aagt', NWScorer(1, -1, -1))
-    >>> print_matrix(scores)
-    [0, -1, -2, -3, -4]
-    [-1, 1,  0, -1, -2]
-    [-2, 0,  0, -1,  0]
-    >>> print_arrow_matrix(arrows)
-    [∅ ← ← ← ←]
-    [↑ ↖ ← ← ←]
-    [↑ ↑ ↖ ← ↖]
-
-    >>> scores, arrows = initialize_matrix('at', 'aagt', WSBScorer())
-    >>> print_matrix(scores)
-    [0, 2, 3, 4, 5]
-    [2, 0, 2, 3, 4]
-    [3, 2, 1, 3, 3]
-    >>> print_arrow_matrix(arrows)
-    [∅ ← ← ← ←]
-    [↑ ↖ ← ← ←]
-    [↑ ↑ ↖ ← ↖]
-
-    More examples of Needleman-Wunsch:
-
-    >>> scores, arrows = initialize_matrix(
-    ...     'gattaca', 'gcatgcu', NWScorer(1, -1, -1))
-    >>> print_matrix(scores)
-    [0,  -1, -2, -3, -4, -5, -6, -7]
-    [-1,  1,  0, -1, -2, -3, -4, -5]
-    [-2,  0,  0,  1,  0, -1, -2, -3]
-    [-3, -1, -1,  0,  2,  1,  0, -1]
-    [-4, -2, -2, -1,  1,  1,  0, -1]
-    [-5, -3, -3, -1,  0,  0,  0, -1]
-    [-6, -4, -2, -2, -1, -1,  1,  0]
-    [-7, -5, -3, -1, -2, -2,  0,  0]
-    >>> print_arrow_matrix(arrows)
-    [∅ ← ← ← ← ← ← ←]
-    [↑ ↖ ← ← ← ← ← ←]
-    [↑ ↑ ↖ ↖ ← ← ← ←]
-    [↑ ↑ ↑ ↑ ↖ ← ← ←]
-    [↑ ↑ ↑ ↑ ↑ ↖ ← ←]
-    [↑ ↑ ↑ ↖ ↑ ↑ ↖ ←]
-    [↑ ↑ ↖ ↑ ↑ ↑ ↖ ←]
-    [↑ ↑ ↑ ↖ ← ↑ ↑ ↖]
-
-    >>> scores, arrows = initialize_matrix(
-    ...     'atgc', 'attgagc', NWScorer(1, -1, -1))
-    >>> print_matrix(scores)
-    [0,  -1, -2, -3, -4, -5, -6, -7]
-    [-1,  1,  0, -1, -2, -3, -4, -5]
-    [-2,  0,  2,  1,  0, -1, -2, -3]
-    [-3, -1,  1,  1,  2,  1,  0, -1]
-    [-4, -2,  0,  0,  1,  1,  0,  1]
-    >>> print_arrow_matrix(arrows)
-    [∅ ← ← ← ← ← ← ←]
-    [↑ ↖ ← ← ← ← ← ←]
-    [↑ ↑ ↖ ← ← ← ← ←]
-    [↑ ↑ ↑ ↖ ↖ ← ← ←]
-    [↑ ↑ ↑ ↑ ↑ ↖ ← ↖]
-
-    """
+    """Return the initialized matrix."""
     n = len(sequence1)
     m = len(sequence2)
     width = m + 1
@@ -425,16 +369,22 @@ def print_matrix(matrix: Matrix) -> None:
 def print_alignment(alignment: list[str]) -> None:
     """Print an alignment."""
     aligned1, aligned2 = alignment
+    max_line_length = 72
     bars = ''
     for (c1, c2) in zip(aligned1, aligned2):
         if c1 == c2:
             bars += '|'
         else:
             bars += ' '
-    bars = bars.rstrip()
-    print(aligned1)
-    print(bars)
-    print(aligned2)
+    while aligned1:
+        print(aligned1[:max_line_length])
+        print(bars[:max_line_length].rstrip())
+        print(aligned2[:max_line_length])
+        aligned1 = aligned1[max_line_length:]
+        bars = bars[max_line_length:]
+        aligned2 = aligned2[max_line_length:]
+        if aligned1:
+            print()
 
 
 def print_arrow_matrix(matrix: ArrowMatrix) -> None:
