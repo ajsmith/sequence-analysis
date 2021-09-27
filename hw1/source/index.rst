@@ -235,43 +235,64 @@ provided by this project.
 
 2. Align samples using Needleman-Wunsch
 
-    >>> result = nw_align(sample1.seq, sample2.seq)
+    >>> nw_options = {
+    ...     'gap_extend': -5,
+    ... }
+    >>> result = nw_align(sample1.seq, sample2.seq, nw_options)
     >>> print_alignment(result)
-    ACTTG-GATATGGATTC--TTCA-CGGTAACGTAACT--GA--ATGTGG-AGACGTCG-GC-GCGAGCCCTG
-     |  | || | | |  |  |||| |  ||| || |||  |   || ||| | | || | |  || ||   ||
-    -CGAGCGAAAAGAAAACAGTTCAGCACTAA-GTCACTTTGTCTATATGGCAAATGT-GAGATGC-AG---TG
+    ACTTGGATATGGATTCTTCACGGTAACGTAACTGAATGTGGAGACGTCGGCGCGAGCCCTGGGAGGAGTTAT
+         || | | |  |    | | | | ||| | | | ||   |  | |||    |      |  | || ||
+    CGAGCGAAAAGAAAACAGTTCAGCA-C-TAAGTCACTTTGTCTATAT-GGCAAATGTGAGATGCAGTGT-AT
     <BLANKLINE>
-    GGA-GGAGTTATCTTTTCTTCTTAACAGCTTATCACCCCGGAATTG--GTTTATCCGGAGATGGGGTCTTAT
-      | ||||   ||  |  |||| |   | | || |    | ||||   | || |    | | |   || | |
-    T-ATGGAGCG-TCAATA-TTCT-A---G-T-ATGA----GAAATTAACGATT-T----A-A-G---TCCT-T
+    CTTTTCTTCTTAACAGCTTATCACCCCGGAATTGGTTTATCCGGAGATGGGGTCTTATGGCTGGAAGAGGCC
+         | ||  || |   ||  |    | ||||     ||    ||      |   |||     |     ||
+    GGAG-CGTC--AATATTCTAGTATGA-GAAATTAACG-ATTTA-AGTCCTTCTTAAATGAGGCCATTTACCC
     <BLANKLINE>
-    GGCTGGAA-GAGGCCAGC-ACCTTT-GCTGGCT-CCGGTGCGCTTGTGACGGCCCGTGAAA-ATCCAC-AGG
-      ||  || |||||||   |||  | |  || | || | || | | | |||     | ||  ||  || ||
-    --CTTAAATGAGGCCATTTACCCATAGAGGG-TGCCAG-GCCCGTATAACGT----T-AATGATT-ACTAG-
+    AGCACCTTTGCTGGCTCCGGTGCGCTTGTGACGGCCCGTGAAAATCCACAGGAAGGAATAGTTTTCATGCTA
+    |       |||  |  |||     | | | | |     | | | |  |        || |||  |  ||||
+    ATAGAGGGTGCCAGGCCCGTATAACGT-TAATGATTACT-AGA-TG-ATGTTTCCAAAGAGTCGTGTTGCTT
     <BLANKLINE>
-    AAGGAATAGTTTTCAT-GC-TAG-GT--C--G-TAC-T-
-    | | | | |||| ||  |  | | ||  |  | ||| |
-    ATG-A-T-GTTTCCAAAGAGTCGTGTTGCTTGATACGTG
+    GGTCGTACT
+    | |
+    GATACGTG-
 
 3. Align samples using Waterman-Smith-Beyer
 
-    >>> result = wsb_align(sample1.seq, sample2.seq)
+    >>> wsb_options = {
+    ...     'gap_start': 10,
+    ...     'gap_extend': 5,
+    ... }
+    >>> result = wsb_align(sample1.seq, sample2.seq, wsb_options)
     >>> print_alignment(result)
-    ACTTGGATATGGATTC--TTCA-CGGTAACGTAACTGAATGTGGA-GACGTCGGCGCGA-GCCCTGGGAGGA
-         || | | |  |  |||| |  ||| || |||   | |  | | |    | | || ||  ||   |||
-    CGAGCGAAAAGAAAACAGTTCAGCACTAA-GTCACTTTGTCTATATGGCAAATGTGAGATGCAGTGTATGGA
+    ACTTGGATATGGATTCTTCACGGTAACGTAACTGAATGTGGAGACGTCGGCGCGAGCCCTGGGAGGAGTTAT
+         || | | |  |    | | |      |    |||  | | | |              | | |   |
+    CGAGCGAAAAGAAAACAGTTCAGCACTAAGTCACTTTGTCTATATGGCAAATGTGAGATGCAGTGTATGGAG
     <BLANKLINE>
-    GT-TATCTTTTCTTCTTAACAGCTTATCACCCCGGAATTGGTTTATCCGGAGATGGGGTCTTATGGC--TGG
-    |  |   | ||||  | |  ||   || | |   || ||   |  | |  | ||| || | | |  |  | |
-    GCGTCAATATTCTAGT-ATGAGAA-ATTAAC---GATTTAAGTCCTTCTTAAATGAGGCCATTTACCCATAG
+    CTTTTCTTCTTAACAGCTTATCACCCCGGAATTGGTTTATCCGGAGATGGGGTCTTATGGCTGGAAGAGGCC
+    | |   |  |  |         |     || ||   |  | |  | ||| || | | |  |   | ||||
+    CGTCAATATTCTAGTATGAGAAATTAACGATTTAAGTCCTTCTTAAATGAGGCCATTTACCCATA-GAGGG-
     <BLANKLINE>
-    AAGAGGCCAGCACCTTTGCTGGCTCCGGTGCGCTTGTGACGGCCCGTGAAAATCCACAGGAAGGAATAGTTT
-    | |  |||||  || |     | |   |    || |  | |     ||    |||| ||  ||   | || |
-    AGGGTGCCAGGCCCGTATAACGTTAATGATTACTAG--ATGA----TGTT--TCCAAAG--AG---TCGTGT
+    AGCACCTTTGCTGGCTCCGGTGCGCTTGTGACGGCCCGTGAAAATCCACAGGAAGGAATAGTTTTCATGCTA
+            |||  |  |||     | |         |  ||  ||       || |   |||  |  ||||
+    --------TGCCAGGCCCGTATAACGTTAATGATTACTAGATGATGTTTCCAAA-G---AGTCGTGTTGCTT
     <BLANKLINE>
-    TCATGCTAGGT-CGTACT
-    |   ||| | | |||
-    T---GCTTGATACGTG--
+    GGTCGTACT
+    | |
+    GATACGTG-
+
+
+Observations
+~~~~~~~~~~~~
+
+EMBOSS Needle with default options produced an alignment with well
+defined gaps and clear regions of high conservation.
+
+In comparison, the alignments produced by this project's
+Needleman-Wunsch and Waterman-Smith-Beyer functions are both more
+spread out and look less clearly defined. Waterman-Smith-Beyer seems
+to produce slightly results. This may be due to the
+Waterman-Smith-Beyer implementation is using an affine gap function
+while Needleman-Wunsch applies a linear gap penalty.
 
 
 Source Code
