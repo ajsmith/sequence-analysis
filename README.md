@@ -12,8 +12,7 @@ Reports are generated using Sphinx Doc.
 
 - Python 3
 - Linux (might work elsewhere too)
-
-Building PDFs also requires a full LaTeX installation.
+- LaTeX (optional if building PDFs is needed)
 
 
 # Usage
