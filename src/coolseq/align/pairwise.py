@@ -7,6 +7,7 @@ are found in their scorer implementations, NWScorer and WSBScorer. A
 number of support functions are also found here.
 
 """
+
 from abc import ABC, abstractmethod
 from collections.abc import Iterable, Sequence
 from itertools import islice
