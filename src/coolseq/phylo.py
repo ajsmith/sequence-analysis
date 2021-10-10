@@ -2,7 +2,6 @@
 
 """
 
-from functools import partial
 from numbers import Real
 
 
@@ -27,10 +26,10 @@ def extent(seq1: str, seq2: str) -> str:
     return seq2[n:]
 
 
-def jc_match(distance: Distance, a: str, b: str) -> Distance:
-    """Return 0 if the characters match, or the distance otherwise."""
+def jc_match(a: str, b: str) -> int:
+    """Return 0 if the characters match; 1 otherwise."""
     if a != b:
-        result = distance
+        result = 1
     else:
         result = 0
     return result
@@ -38,9 +37,7 @@ def jc_match(distance: Distance, a: str, b: str) -> Distance:
 
 def jc_distance(seq1: str, seq2: str) -> Distance:
     """Return Jukes-Cantor distance between two nucleic acid sequences."""
-    mismatch = 1
-    jc_func = partial(jc_match, mismatch)
-    result: Distance = 0
-    result += sum(jc_func(c1, c2) for (c1, c2) in zip(seq1, seq2))
-    result += len(extent(seq1, seq2)) * mismatch
+    alpha = 1
+    result = alpha * sum(jc_match(c1, c2) for (c1, c2) in zip(seq1, seq2))
+    result += alpha * len(extent(seq1, seq2))
     return result
