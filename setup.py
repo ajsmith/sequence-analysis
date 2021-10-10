@@ -11,7 +11,7 @@ setup(
     author='Alexander Smith',
     author_email='asmitl@gmu.edu',
     url='https://github.com/ajsmith/sequence-analysis',
-    packages=find_packages('src'),
+    packages=['coolseq'],
     package_dir={'': 'src'},
 #    entry_points=entry_points,
     include_package_data=True,
