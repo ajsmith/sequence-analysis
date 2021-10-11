@@ -58,3 +58,25 @@ Another example.
     >>> distance = jc_distance(seq1, seq2)
     >>> round(distance, 3)
     0.52
+
+
+WPGMA
+=====
+
+Weighted pair group method with arithmetic mean (WPGMA) is a
+clustering method which can be used to relate taxa and build
+phylogenetic trees.
+
+We'll perform WPGMA on the following example data.
+
+    >>> from coolseq.phylo import wpgma
+    >>> example1 = [
+    ...     [0, 6, 10, 10, 10],
+    ...     [6, 0, 10, 10, 10],
+    ...     [10, 10, 0, 2, 6],
+    ...     [10, 10, 2, 0, 6],
+    ...     [10, 10, 6, 6, 0],
+    ... ]
+    >>> names1 = list('ABCDE')
+    >>> clusters = wpgma(example1, names1)
+    >>> print(clusters[0][1])
