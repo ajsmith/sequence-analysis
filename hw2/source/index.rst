@@ -55,3 +55,5 @@ References
  4. https://en.wikipedia.org/wiki/Neighbor_joining
 
  5. https://en.wikipedia.org/wiki/Models_of_DNA_evolution#JC69_model_(Jukes_and_Cantor_1969)
+
+ 6. https://www.megasoftware.net/web_help_7/hc_jukes_cantor_distance.htm

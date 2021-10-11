@@ -37,6 +37,24 @@ The distance increases with number of differences.
     >>> jc_distance('tcgt', 'acgt') < jc_distance('ttgt', 'acgt')
     True
 
+Sequences must be equal length (implying they've already been
+aligned).
+
+    >>> jc_distance('ac', 'a')
+    Traceback (most recent call last):
+    ValueError: Sequence lengths differ
+
+Sequences must not be empty.
+
+    >>> jc_distance('', '')
+    Traceback (most recent call last):
+    ValueError: Empty sequences
+
+Another example.
+
     >>> seq1 = 'actgggct'
     >>> #         || |||
     >>> seq2 = 'cgtgagct'
+    >>> distance = jc_distance(seq1, seq2)
+    >>> round(distance, 3)
+    0.52
