@@ -78,5 +78,11 @@ We'll perform WPGMA on the following example data.
     ...     [10, 10, 6, 6, 0],
     ... ]
     >>> names1 = list('ABCDE')
-    >>> clusters = wpgma(example1, names1)
-    >>> print(clusters[0][1])
+    >>> tree, links, names = wpgma(example1, names1)
+    >>> tree
+    (5.0, (3.0, (0, 'A'), (1, 'B')), (3.0, (4, 'E'), (1.0, (2, 'C'), (3, 'D'))))
+    >>> print(links)
+    [[2. 3. 1. 2.]
+     [0. 1. 3. 2.]
+     [4. 5. 3. 3.]
+     [6. 7. 5. 5.]]
