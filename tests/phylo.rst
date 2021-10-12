@@ -67,7 +67,13 @@ Weighted pair group method with arithmetic mean (WPGMA) is a
 clustering method which can be used to relate taxa and build
 phylogenetic trees.
 
-We'll perform WPGMA on the following example data.
+We'll perform WPGMA on the following example data. Tree data is
+returned both in a tuple representation as well as a Scipy linkage
+representation which can be used for building dendrograms.
+
+In the tuple representation, a branch is represented as a triple of
+(HEIGHT, L_TREE, R_TREE), and a leaf is represented as a pair of
+(TAXA_INDEX, TAXA_LABEL).
 
     >>> from coolseq.phylo import wpgma
     >>> example1 = [
@@ -80,12 +86,20 @@ We'll perform WPGMA on the following example data.
     >>> names1 = list('ABCDE')
     >>> tree, links, names = wpgma(example1, names1)
     >>> tree
-    (5.0, (3.0, (0, 'A'), (1, 'B')), (3.0, (4, 'E'), (1.0, (2, 'C'), (3, 'D'))))
+    (5.0,
+      (3.0,
+        (0, 'A'),
+        (1, 'B')),
+      (3.0,
+        (4, 'E'),
+        (1.0,
+          (2, 'C'),
+          (3, 'D'))))
     >>> print(links)
-    [[2. 3. 1. 2.]
-     [0. 1. 3. 2.]
-     [4. 5. 3. 3.]
-     [6. 7. 5. 5.]]
+    [[0. 1. 3. 2.]
+     [2. 3. 1. 2.]
+     [4. 6. 3. 3.]
+     [5. 7. 5. 5.]]
 
 Here's another example using the primate data.
 
@@ -99,9 +113,17 @@ Here's another example using the primate data.
     >>> names2 = ['Human', 'Chimp', 'Gorilla', 'Orang-utan', 'Gibbon']
     >>> tree, links, names = wpgma(example2, names2)
     >>> tree
-    (84.0625, (4, 'Gibbon'), (74.75, (3, 'Orang-utan'), (46.75, (2, 'Gorilla'), (39.5, (0, 'Human'), (1, 'Chimp')))))
+    (84.0625,
+      (4, 'Gibbon'),
+      (74.75,
+        (3, 'Orang-utan'),
+        (46.75,
+          (2, 'Gorilla'),
+          (39.5,
+            (0, 'Human'),
+            (1, 'Chimp')))))
     >>> print(links)
     [[ 0.      1.     39.5     2.    ]
-     [ 2.      3.     46.75    3.    ]
-     [ 3.      4.     74.75    4.    ]
-     [ 4.      5.     84.0625  5.    ]]
+    [ 2.      5.     46.75    3.    ]
+    [ 3.      6.     74.75    4.    ]
+    [ 4.      7.     84.0625  5.    ]]

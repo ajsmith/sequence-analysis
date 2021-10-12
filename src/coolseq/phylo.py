@@ -65,49 +65,43 @@ def is_leaf(tree):
     return len(tree) == 2
 
 
-def make_links(tree, links=None):
+def make_links(tree, links, n_clusters):
     """Recursively add links to a tree."""
     count = 0
-    index = 0
-    if not links:
-        links = []
     height, l_tree, r_tree = tree
     if is_leaf(l_tree) and is_leaf(r_tree):
         l_index, _ = l_tree
         r_index, _ = r_tree
         count = 2
-        links.insert(0, [l_index, r_index, height, count])
-        index = max(l_index, r_index)
+        links.append([l_index, r_index, height, count])
     elif is_leaf(l_tree):
         l_index, _ = l_tree
-        r_count, r_index, links = make_links(r_tree, links)
+        r_count, r_index, links = make_links(r_tree, links, n_clusters)
         count = r_count + 1
-        index = max(l_index, r_index) + 1
-        links.append([l_index, index, height, count])
+        links.append([l_index, r_index, height, count])
     elif is_leaf(r_tree):
         r_index, _ = r_tree
-        l_count, l_index, links = make_links(l_tree, links)
+        l_count, l_index, links = make_links(l_tree, links, n_clusters)
         count = l_count + 1
         links.append([l_index, r_index, height, count])
-        index = max(l_index, r_index) + 1
     else:
-        l_count, l_index, links = make_links(l_tree, links)
-        r_count, r_index, links = make_links(r_tree, links)
+        l_count, l_index, links = make_links(l_tree, links, n_clusters)
+        r_count, r_index, links = make_links(r_tree, links, n_clusters)
         count = l_count + r_count
-        index = max(l_index, r_index) + 1
-        links.append([index, index + 1, height, count])
-        index = index + 1
+        links.append([l_index, r_index, height, count])
+    index = len(links) + n_clusters
     return (count, index, links)
 
 
-def to_linkage(tree):
-    _, _, links = make_links(tree)
+def to_linkage(tree, n_clusters):
+    """Create linkage data from a tuple representation of a tree."""
+    links = []
+    _, _, links = make_links(tree, links, n_clusters)
     return np.array(links)
 
 
 def wpgma_shrink(matrix: DistanceMatrix, clusters: list[tuple[Any]]) -> tuple[DistanceMatrix, dict[int, str]]:
     closest = find_closest(matrix)
-    # print(f'Closest: {closest}, {clusters[closest[0]]} {clusters[closest[1]]}')
     k, l = closest
     new_cluster = (matrix[k][l] / 2, clusters[k], clusters[l])
     clusters.pop(l)
@@ -137,12 +131,11 @@ def wpgma_shrink(matrix: DistanceMatrix, clusters: list[tuple[Any]]) -> tuple[Di
 def wpgma(matrix: DistanceMatrix, names: list[str]) -> None:
     """Build phylogenetic tree using WPGMA."""
     result = None
+    n_taxa = len(matrix)
+    n_clusters = n_taxa - 1
     clusters = [(i, names[i],) for i in range(len(matrix))]
     while len(matrix) > 1:
         matrix, clusters = wpgma_shrink(matrix, clusters)
-        # print_matrix(matrix)
-        # print(clusters)
-    # linkage = make_links(clusters[0])
     root = clusters[0]
-    links = to_linkage(root)
+    links = to_linkage(root, n_clusters)
     return root, links, names
