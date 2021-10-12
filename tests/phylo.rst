@@ -86,3 +86,22 @@ We'll perform WPGMA on the following example data.
      [0. 1. 3. 2.]
      [4. 5. 3. 3.]
      [6. 7. 5. 5.]]
+
+Here's another example using the primate data.
+
+    >>> example2 = [
+    ...     [0, 79, 92, 144, 162],
+    ...     [79, 0, 95, 154, 169],
+    ...     [92, 95, 0, 150, 169],
+    ...     [144, 154, 150, 0, 169],
+    ...     [162, 169, 169, 169, 0],
+    ... ]
+    >>> names2 = ['Human', 'Chimp', 'Gorilla', 'Orang-utan', 'Gibbon']
+    >>> tree, links, names = wpgma(example2, names2)
+    >>> tree
+    (84.0625, (4, 'Gibbon'), (74.75, (3, 'Orang-utan'), (46.75, (2, 'Gorilla'), (39.5, (0, 'Human'), (1, 'Chimp')))))
+    >>> print(links)
+    [[ 0.      1.     39.5     2.    ]
+     [ 2.      3.     46.75    3.    ]
+     [ 3.      4.     74.75    4.    ]
+     [ 4.      5.     84.0625  5.    ]]
