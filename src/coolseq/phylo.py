@@ -128,7 +128,7 @@ def wpgma_shrink(matrix: DistanceMatrix, clusters: list[tuple[Any]]) -> tuple[Di
     return (new_matrix, clusters)
 
 
-def wpgma(matrix: DistanceMatrix, names: list[str]) -> None:
+def wpgma(matrix: DistanceMatrix, names: list[str]) -> tuple:
     """Build phylogenetic tree using WPGMA."""
     result = None
     n_taxa = len(matrix)
@@ -136,6 +136,51 @@ def wpgma(matrix: DistanceMatrix, names: list[str]) -> None:
     clusters = [(i, names[i],) for i in range(len(matrix))]
     while len(matrix) > 1:
         matrix, clusters = wpgma_shrink(matrix, clusters)
+    root = clusters[0]
+    links = to_linkage(root, n_clusters)
+    return root, links, names
+
+
+def upgma_shrink(matrix, clusters, cluster_sizes):
+    closest = find_closest(matrix)
+    k, l = closest
+    new_cluster = (matrix[k][l] / 2, clusters[k], clusters[l])
+    k_size = cluster_sizes[clusters[k]]
+    l_size = cluster_sizes[clusters[l]]
+    clusters.pop(l)
+    clusters.pop(k)
+    clusters.append(new_cluster)
+    cluster_sizes[new_cluster] = k_size + l_size
+    new_vec = []
+    for i in range(len(matrix)):
+        if i not in closest:
+            distance = (k_size * matrix[i][k] + l_size * matrix[i][l]) / (k_size + l_size)
+            new_vec.append(distance)
+    new_matrix = []
+    for i in range(len(matrix)):
+        if i in closest:
+            continue
+        vec = matrix[i]
+        k, l = closest
+        vec = vec[:l] + vec[l+1:]
+        vec = vec[:k] + vec[k+1:]
+        new_matrix.append(vec)
+    for i in range(len(new_vec)):
+        new_matrix[i].append(new_vec[i])
+    new_vec.append(0)
+    new_matrix.append(new_vec)
+    return (new_matrix, clusters)
+
+
+def upgma(matrix: DistanceMatrix, names: list[str]) -> tuple:
+    """Build phylogenetic tree using UPGMA."""
+    result = None
+    n_taxa = len(matrix)
+    n_clusters = n_taxa - 1
+    clusters = [(i, names[i]) for i in range(len(matrix))]
+    cluster_sizes = dict((cl, 1) for cl in clusters)
+    while len(matrix) > 1:
+        matrix, clusters = upgma_shrink(matrix, clusters, cluster_sizes)
     root = clusters[0]
     links = to_linkage(root, n_clusters)
     return root, links, names

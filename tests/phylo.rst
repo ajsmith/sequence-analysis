@@ -124,6 +124,79 @@ Here's another example using the primate data.
             (1, 'Chimp')))))
     >>> print(links)
     [[ 0.      1.     39.5     2.    ]
-    [ 2.      5.     46.75    3.    ]
-    [ 3.      6.     74.75    4.    ]
-    [ 4.      7.     84.0625  5.    ]]
+     [ 2.      5.     46.75    3.    ]
+     [ 3.      6.     74.75    4.    ]
+     [ 4.      7.     84.0625  5.    ]]
+
+
+UPGMA
+=====
+
+Unweighted pair group method with arithmetic mean (UPGMA) is a
+clustering method which can be used to relate taxa and build
+phylogenetic trees. This method works similarly to WPGMA above, and
+returns results in the same formats.
+
+    >>> from coolseq.phylo import upgma
+    >>> tree, links, names = upgma(example1, names1)
+    >>> tree
+    (5.0,
+      (3.0,
+        (0, 'A'),
+        (1, 'B')),
+      (3.0,
+        (4, 'E'),
+        (1.0,
+          (2, 'C'),
+          (3, 'D'))))
+    >>> print(links)
+    [[0. 1. 3. 2.]
+     [2. 3. 1. 2.]
+     [4. 6. 3. 3.]
+     [5. 7. 5. 5.]]
+
+Again using the primate data.
+
+    >>> tree, links, names = wpgma(example2, names2)
+    >>> tree
+    (84.0625,
+      (4, 'Gibbon'),
+      (74.75,
+        (3, 'Orang-utan'),
+        (46.75,
+          (2, 'Gorilla'),
+          (39.5,
+            (0, 'Human'),
+            (1, 'Chimp')))))
+    >>> print(links)
+    [[ 0.      1.     39.5     2.    ]
+     [ 2.      5.     46.75    3.    ]
+     [ 3.      6.     74.75    4.    ]
+     [ 4.      7.     84.0625  5.    ]]
+
+Another example which mirrors the working example from the UPGMA
+wikipedia page.
+
+    >>> example3 = [
+    ...     [0, 17, 21, 31, 23],
+    ...     [17, 0, 30, 34, 21],
+    ...     [21, 30, 0, 28, 39],
+    ...     [31, 34, 28, 0, 43],
+    ...     [23, 21, 39, 43, 0],
+    ... ]
+    >>> tree, links, names = upgma(example3, names1)
+    >>> tree
+    (16.5,
+      (11.0,
+        (4, 'E'),
+        (8.5,
+          (0, 'A'),
+          (1, 'B'))),
+      (14.0,
+        (2, 'C'),
+        (3, 'D')))
+    >>> print(links)
+    [[ 0.   1.   8.5  2. ]
+     [ 4.   5.  11.   3. ]
+     [ 2.   3.  14.   2. ]
+     [ 6.   7.  16.5  5. ]]
