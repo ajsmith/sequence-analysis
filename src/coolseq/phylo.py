@@ -8,8 +8,6 @@ from typing import Any
 
 import numpy as np
 
-from coolseq.align.pairwise import print_matrix
-
 
 # Type definitions
 Distance = Real
@@ -101,6 +99,7 @@ def to_linkage(tree, n_clusters):
 
 
 def wpgma_shrink(matrix: DistanceMatrix, clusters: list[tuple[Any]]) -> tuple[DistanceMatrix, dict[int, str]]:
+    """Find the next WPGMA cluster and compact the distance matrix."""
     closest = find_closest(matrix)
     k, l = closest
     new_cluster = (matrix[k][l] / 2, clusters[k], clusters[l])
@@ -130,7 +129,6 @@ def wpgma_shrink(matrix: DistanceMatrix, clusters: list[tuple[Any]]) -> tuple[Di
 
 def wpgma(matrix: DistanceMatrix, names: list[str]) -> tuple:
     """Build phylogenetic tree using WPGMA."""
-    result = None
     n_taxa = len(matrix)
     n_clusters = n_taxa - 1
     clusters = [(i, names[i],) for i in range(len(matrix))]
@@ -142,6 +140,7 @@ def wpgma(matrix: DistanceMatrix, names: list[str]) -> tuple:
 
 
 def upgma_shrink(matrix, clusters, cluster_sizes):
+    """Find the next UPGMA cluster and compact the distance matrix."""
     closest = find_closest(matrix)
     k, l = closest
     new_cluster = (matrix[k][l] / 2, clusters[k], clusters[l])
@@ -174,7 +173,6 @@ def upgma_shrink(matrix, clusters, cluster_sizes):
 
 def upgma(matrix: DistanceMatrix, names: list[str]) -> tuple:
     """Build phylogenetic tree using UPGMA."""
-    result = None
     n_taxa = len(matrix)
     n_clusters = n_taxa - 1
     clusters = [(i, names[i]) for i in range(len(matrix))]
