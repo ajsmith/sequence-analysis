@@ -210,10 +210,8 @@ def nj_divergence_matrix(matrix, divergence_vector=None):
         for j in range(n):
             if i == j:
                 result[i].append(0)
-            elif i < j:
-                result[i].append((n - 2) * matrix[i][j] - r_vec[i] - r_vec[j])
             else:
-                result[i].append((n - 2) * matrix[j][i] - r_vec[i] - r_vec[j])
+                result[i].append((n - 2) * matrix[i][j] - r_vec[i] - r_vec[j])
     return result
 
 
