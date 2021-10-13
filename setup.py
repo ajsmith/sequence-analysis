@@ -16,10 +16,15 @@ setup(
 #    entry_points=entry_points,
     include_package_data=True,
     package_data={
-        'coolseq': ['align/samples.fasta'],
+        'coolseq': [
+            'align/samples.fasta',
+            'samples/rRNA-5S.fasta',
+        ],
     },
     install_requires=[
         'PyYAML',
+        'matplotlib',
         'numpy',
+        'scipy',
     ],
 )
