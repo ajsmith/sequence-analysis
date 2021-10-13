@@ -200,3 +200,82 @@ wikipedia page.
      [ 4.   5.  11.   3. ]
      [ 2.   3.  14.   2. ]
      [ 6.   7.  16.5  5. ]]
+
+
+Neighbor Joining
+================
+
+Neighbor Joining is another clustering method used in the creation of
+phylogenetic trees from a distance matrix.
+
+    >>> example4 = [
+    ...     [0,  5, 4,  7, 6,  8],
+    ...     [5,  0, 7, 10, 9, 11],
+    ...     [4,  7, 0,  7, 6,  8],
+    ...     [7, 10, 7,  0, 5,  9],
+    ...     [6,  9, 6,  5, 0,  8],
+    ...     [8, 11, 8,  9, 8,  0],
+    ... ]
+    >>> names4 = list('ABCDEF')
+
+    >>> from coolseq.phylo import nj_divergence_matrix
+    >>> from coolseq.utils import print_matrix
+    >>> print_matrix(nj_divergence_matrix(example4))
+    [0,   -52, -46, -40, -40, -42]
+    [-52,   0, -46, -40, -40, -42]
+    [-46, -46,   0, -42, -42, -44]
+    [-40, -40, -42,   0, -52, -46]
+    [-40, -40, -42, -52,   0, -46]
+    [-42, -42, -44, -46, -46,   0]
+
+    >>> from coolseq.phylo import neighbor_joining
+    >>> m = neighbor_joining(example4, names4)
+    >>> tree, names = neighbor_joining(example4, names4)
+    >>> tree
+    ((0.5, 0.5),
+      ((3.0, 2.0),
+        (3, 'D'),
+        (4, 'E')),
+      ((5.0, 1.0),
+        (5, 'F'),
+        ((2.0, 1.0),
+          (2, 'C'),
+          ((1.0, 4.0),
+            (0, 'A'),
+            (1, 'B')))))
+
+Again using the primate data.
+
+    >>> tree, names = neighbor_joining(example2, names2)
+    >>> tree
+    ((3.0625, 3.0625),
+      ((36.625, 42.375),
+        (0, 'Human'),
+        (1, 'Chimp')),
+      ((47.875, 27.125),
+        (2, 'Gorilla'),
+        ((75.83333333333333, 93.16666666666667),
+          (3, 'Orang-utan'),
+          (4, 'Gibbon'))))
+
+Another example which mirrors the working example from the Neighbor
+Joining wikipedia page.
+
+    >>> example5 = [
+    ...     [0,  5,  9,  9, 8],
+    ...     [5,  0, 10, 10, 9],
+    ...     [9, 10,  0,  8, 7],
+    ...     [9, 10,  8,  0, 3],
+    ...     [8,  9,  7,  3, 0],
+    ... ]
+    >>> tree, names = neighbor_joining(example5, list('ABCDE'))
+    >>> tree
+    ((1.0, 1.0),
+      ((4.0, 3.0),
+        (2, 'C'),
+        ((2.0, 3.0),
+          (0, 'A'),
+          (1, 'B'))),
+        ((2.0, 1.0),
+          (3, 'D'),
+          (4, 'E')))
