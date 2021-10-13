@@ -75,3 +75,11 @@ todo_include_todos = True
 
 #latex_toplevel_sectioning = None
 latex_theme = 'howto'
+
+import doctest
+doctest_default_flags = (
+    doctest.ELLIPSIS
+    | doctest.NORMALIZE_WHITESPACE
+    | doctest.IGNORE_EXCEPTION_DETAIL
+    | doctest.DONT_ACCEPT_TRUE_FOR_1
+)
