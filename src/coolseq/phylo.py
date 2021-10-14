@@ -5,8 +5,14 @@
 from math import log
 from numbers import Real
 from typing import Any
+from pkg_resources import resource_filename
 
 import numpy as np
+import matplotlib.pyplot as plt
+from Bio import SeqIO
+from scipy.cluster.hierarchy import dendrogram
+
+from coolseq.align.pairwise import wsb_align
 
 
 # Type definitions
@@ -251,14 +257,216 @@ def nj_shrink(matrix, clusters):
 
 def neighbor_joining(matrix: DistanceMatrix, names: list[str]) -> tuple:
     """Build phylogenetic tree using UPGMA."""
-    n_taxa = len(matrix)
-    n_clusters = n_taxa - 1
     clusters = [(i, names[i]) for i in range(len(matrix))]
     while len(matrix) > 2:
         matrix, clusters = nj_shrink(matrix, clusters)
     dist = matrix[0][1] / 2
     l_tree, r_tree = clusters
     root = ((dist, dist), l_tree, r_tree)
-    # links = to_linkage(root, n_clusters)
-    # return root, links, names
     return (root, names)
+
+
+def generate_distance_matrix(sequences):
+    """Generate a distance matrix from sequence data."""
+    result = []
+    n = len(sequences)
+    wsb_options = {
+        'match': 0,
+        'mismatch': 3,
+        'gap_start': 10,
+        'gap_extend': 1,
+    }
+    for i in range(n):
+        result.append([])
+        for j in range(n):
+            if j <= i:
+                result[i].append(0)
+            else:
+                seq1 = sequences[i]
+                seq2 = sequences[j]
+                l_result, r_result = wsb_align(seq1, seq2, wsb_options)
+                distance = jc_distance(l_result, r_result)
+                distance = round(distance, 5)
+                result[i].append(distance)
+    for i in range(n):
+        for j in range(i + 1, n):
+            result[j][i] = result[i][j]
+    return result
+
+
+def get_sample_sequence_data():
+    """Return the sample IDs, descriptions, and sequences."""
+    file_path = resource_filename('coolseq', 'samples/rRNA-5S.fasta')
+    rrna_samples = list(SeqIO.parse(file_path, 'fasta'))
+    sequences = [sample.seq for sample in rrna_samples]
+    ids = [sample.id for sample in rrna_samples]
+    descriptions = [sample.description for sample in rrna_samples]
+    return (ids, descriptions, sequences)
+
+
+def get_example1():
+    """Return example 1."""
+    example = [
+        [0, 6, 10, 10, 10],
+        [6, 0, 10, 10, 10],
+        [10, 10, 0, 2, 6],
+        [10, 10, 2, 0, 6],
+        [10, 10, 6, 6, 0],
+    ]
+    names = list('ABCDE')
+    return (example, names)
+
+
+def get_example2():
+    """Return example 2."""
+    example = [
+        [0,  5, 4,  7, 6,  8],
+        [5,  0, 7, 10, 9, 11],
+        [4,  7, 0,  7, 6,  8],
+        [7, 10, 7,  0, 5,  9],
+        [6,  9, 6,  5, 0,  8],
+        [8, 11, 8,  9, 8,  0],
+    ]
+    names = list('ABCDEF')
+    return (example, names)
+
+
+def get_example3():
+    """Return example 3."""
+    example = [
+        [0, 79, 92, 144, 162],
+        [79, 0, 95, 154, 169],
+        [92, 95, 0, 150, 169],
+        [144, 154, 150, 0, 169],
+        [162, 169, 169, 169, 0],
+    ]
+    names = ['Human', 'Chimp', 'Gorilla', 'Orangutan', 'Gibbon']
+    return (example, names)
+
+
+def get_example4():
+    """Return example 4."""
+    names, _, sequences = get_sample_sequence_data()
+    example = generate_distance_matrix(sequences)
+    return (example, names)
+
+
+def get_examples():
+    """Return all examples."""
+    return {
+        'example1': get_example1(),
+        'example2': get_example2(),
+        'example3': get_example3(),
+        'example4': get_example4(),
+    }
+
+
+def print_wpgma_ex1():
+    """Print the WPGMA clusters for example1."""
+    matrix, names = get_example1()
+    root, _, _ = wpgma(matrix, names)
+    print(root)
+
+
+def plot_wpgma_ex1():
+    """Using Example1."""
+    matrix, names = get_example1()
+    _, links, names = wpgma(matrix, names)
+    dn = dendrogram(links, labels=names)
+    plt.show()
+
+
+def print_wpgma_ex3():
+    """Print the WPGMA clusters for example3."""
+    matrix, names = get_example3()
+    root, _, _ = wpgma(matrix, names)
+    print(root)
+
+
+def plot_wpgma_ex3():
+    """Using Example3."""
+    matrix, names = get_example3()
+    _, links, names = wpgma(matrix, names)
+    dn = dendrogram(links, labels=names)
+    plt.show()
+
+
+def print_wpgma_ex4():
+    """Print the WPGMA clusters for example4."""
+    matrix, names = get_example4()
+    root, _, _ = wpgma(matrix, names)
+    print(root)
+
+
+def plot_wpgma_ex4():
+    """Using Example4."""
+    matrix, names = get_example4()
+    _, links, names = wpgma(matrix, names)
+    dn = dendrogram(links, labels=names)
+    plt.show()
+
+
+def print_upgma_ex1():
+    """Print the UPGMA clusters for example1."""
+    matrix, names = get_example1()
+    root, _, _ = upgma(matrix, names)
+    print(root)
+
+
+def plot_upgma_ex1():
+    """Using Example1."""
+    matrix, names = get_example1()
+    _, links, names = upgma(matrix, names)
+    dn = dendrogram(links, labels=names)
+    plt.show()
+
+
+def print_upgma_ex3():
+    """Print the UPGMA clusters for example3."""
+    matrix, names = get_example3()
+    root, _, _ = upgma(matrix, names)
+    print(root)
+
+
+def plot_upgma_ex3():
+    """Using Example3."""
+    matrix, names = get_example3()
+    _, links, names = upgma(matrix, names)
+    dn = dendrogram(links, labels=names)
+    plt.show()
+
+
+def print_upgma_ex4():
+    """Print the UPGMA clusters for example4."""
+    matrix, names = get_example4()
+    root, _, _ = upgma(matrix, names)
+    print(root)
+
+
+def plot_upgma_ex4():
+    """Using Example4."""
+    matrix, names = get_example4()
+    _, links, names = upgma(matrix, names)
+    dn = dendrogram(links, labels=names)
+    plt.show()
+
+
+def print_nj_ex2():
+    """Print the Neighbor Joining clusters for example2."""
+    matrix, names = get_example2()
+    root, _ = neighbor_joining(matrix, names)
+    print(root)
+
+
+def print_nj_ex3():
+    """Print the Neighbor Joining clusters for example3."""
+    matrix, names = get_example3()
+    root, _ = neighbor_joining(matrix, names)
+    print(root)
+
+
+def print_nj_ex4():
+    """Print the Neighbor Joining clusters for example4."""
+    matrix, names = get_example4()
+    root, _ = neighbor_joining(matrix, names)
+    print(root)
