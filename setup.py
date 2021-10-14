@@ -23,6 +23,7 @@ setup(
     },
     install_requires=[
         'PyYAML',
+        'biopython',
         'matplotlib',
         'numpy',
         'scipy',
